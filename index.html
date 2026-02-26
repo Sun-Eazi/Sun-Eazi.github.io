@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linus Lucas Rwechoka — AI Engineer</title>
+    <meta name="description"
+        content="Portfolio of Linus Lucas Rwechoka - AI Engineer, Machine Learning Specialist & Computer Engineering Student at UAUT.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:opsz,wght@9..144,100;9..144,300;9..144,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Generative AI (Gemini) SDK -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+    </script>
+</head>
+
+<body>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="noise-overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-logo">
+            <span class="logo-bracket">[</span>LLR<span class="logo-bracket">]</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#hero" class="nav-link">HOME</a></li>
+            <li><a href="#about" class="nav-link">ABOUT</a></li>
+            <li><a href="#projects" class="nav-link">PROJECTS</a></li>
+            <li><a href="#skills" class="nav-link">SKILLS</a></li>
+            <li><a href="#ai-brain" class="nav-link">AI BRAIN</a></li>
+        </ul>
+        <div class="nav-badge">
+            <span class="live-dot"></span>
+            <span class="nav-badge-text">ONLINE</span>
+        </div>
+        <button class="hamburger" id="hamburger" aria-label="Open menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+    <div class="mobile-menu" id="mobile-menu">
+        <ul>
+            <li><a href="#hero" class="nav-link">HOME</a></li>
+            <li><a href="#about" class="nav-link">ABOUT</a></li>
+            <li><a href="#projects" class="nav-link">PROJECTS</a></li>
+            <li><a href="#skills" class="nav-link">SKILLS</a></li>
+            <li><a href="#ai-brain" class="nav-link">AI BRAIN</a></li>
+        </ul>
+    </div>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="hero">
+            <div class="hero-bg-grid"></div>
+            <div class="hero-content">
+                <div class="hero-eyebrow">
+                    <span class="eyebrow-line"></span>
+                    <span class="eyebrow-text">COMPUTER ENGINEERING · UAUT · TANZANIA</span>
+                    <span class="eyebrow-line"></span>
+                </div>
+                <h1 class="hero-name">
+                    <span class="name-line" data-text="LINUS">LINUS</span>
+                    <span class="name-line accent" data-text="LUCAS">LUCAS</span>
+                    <span class="name-line" data-text="RWECHOKA">RWECHOKA</span>
+                </h1>
+                <p class="hero-role">
+                    <span class="role-word">AI</span>
+                    <span class="role-separator">/</span>
+                    <span class="role-word">ML</span>
+                    <span class="role-separator">/</span>
+                    <span class="role-word">ENGINEER</span>
+                </p>
+                <p class="hero-desc">Building intelligent systems at the intersection of<br>computer vision, machine
+                    learning & embedded hardware.</p>
+                <div class="hero-actions">
+                    <a href="#projects" class="btn-primary">
+                        <span>EXPLORE WORK</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                    <a href="#ai-brain" class="btn-ghost">
+                        <span class="btn-ghost-pulse"></span>
+                        TALK TO MY AI
+                    </a>
+                </div>
+                <div class="hero-scroll-hint">
+                    <span>SCROLL</span>
+                    <div class="scroll-line"></div>
+                </div>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-num" data-target="3">0</span>
+                    <span class="stat-label">PROJECTS</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-num" data-target="8">0</span>
+                    <span class="stat-label">TECHNOLOGIES</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-num" data-target="2">0</span>
+                    <span class="stat-label">YEARS DEEP</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about">
+            <div class="about-inner">
+                <div class="about-label">
+                    <span class="label-num">01</span>
+                    <span class="label-text">ABOUT</span>
+                </div>
+                <div class="about-body">
+                    <h2 class="section-heading">A builder at<br><em>the edge of AI.</em></h2>
+                    <p class="about-text">2nd-year Computer Engineering student at UAUT, Tanzania — obsessed with
+                        turning raw data into intelligent systems. From training YOLO models to soldering IoT circuits,
+                        I work across the full stack of intelligent hardware and software.</p>
+                    <p class="about-text">My focus: <strong>Computer Vision</strong>, <strong>Machine Learning</strong>,
+                        and <strong>Embedded Systems</strong> — the triad that powers tomorrow's autonomous world.</p>
+                    <div class="about-langs">
+                        <span class="lang-tag">🇬🇧 English</span>
+                        <span class="lang-tag">🇹🇿 Kiswahili</span>
+                    </div>
+                    <a href="https://github.com/Sun-Eazi" target="_blank" class="github-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                        </svg>
+                        @Sun-Eazi on GitHub
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="projects">
+            <div class="section-label">
+                <span class="label-num">02</span>
+                <span class="label-text">PROJECTS</span>
+            </div>
+            <h2 class="section-heading centered">Engineered<br><em>Solutions.</em></h2>
+            <div class="projects-grid">
+                <div class="project-card featured reveal">
+                    <div class="project-number">001</div>
+                    <div class="project-tag">AI / COMPUTER VISION</div>
+                    <h3 class="project-title">YOLOv5 Traffic<br>Density Model</h3>
+                    <p class="project-desc">Real-time vehicle detection and traffic density estimation using deep
+                        learning. The model classifies vehicle types and estimates congestion levels from live camera
+                        feeds — deployable on edge hardware.</p>
+                    <div class="project-tech">
+                        <span>Python</span>
+                        <span>PyTorch</span>
+                        <span>YOLOv5</span>
+                        <span>OpenCV</span>
+                    </div>
+                    <div class="project-footer">
+                        <span class="project-status active">
+                            <span class="status-dot"></span>
+                            ACTIVE
+                        </span>
+                    </div>
+                    <div class="card-glow"></div>
+                </div>
+
+                <div class="project-card reveal">
+                    <div class="project-number">002</div>
+                    <div class="project-tag">IoT / HARDWARE</div>
+                    <h3 class="project-title">Arduino Smart<br>Home System</h3>
+                    <p class="project-desc">IoT-based home automation with sensor integration, servo control and remote
+                        monitoring. Bridges hardware and software through serial communication and a custom control
+                        interface.</p>
+                    <div class="project-tech">
+                        <span>Arduino</span>
+                        <span>C++</span>
+                        <span>Sensors</span>
+                    </div>
+                    <div class="project-footer">
+                        <span class="project-status">
+                            <span class="status-dot"></span>
+                            COMPLETE
+                        </span>
+                    </div>
+                    <div class="card-glow"></div>
+                </div>
+
+                <div class="project-card reveal">
+                    <div class="project-number">003</div>
+                    <div class="project-tag">DATABASE / BACKEND</div>
+                    <h3 class="project-title">Inventory<br>Management System</h3>
+                    <p class="project-desc">SQL-powered inventory tracking system with efficient database architecture
+                        for large-scale item management, reporting and stock level monitoring across multiple
+                        categories.</p>
+                    <div class="project-tech">
+                        <span>MySQL</span>
+                        <span>PHP</span>
+                        <span>Linux</span>
+                    </div>
+                    <div class="project-footer">
+                        <span class="project-status">
+                            <span class="status-dot"></span>
+                            COMPLETE
+                        </span>
+                    </div>
+                    <div class="card-glow"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="skills">
+            <div class="section-label">
+                <span class="label-num">03</span>
+                <span class="label-text">SKILLS</span>
+            </div>
+            <h2 class="section-heading centered">Technical<br><em>Arsenal.</em></h2>
+            <div class="skills-grid">
+                <div class="skill-group reveal">
+                    <h4 class="skill-group-title">AI / ML</h4>
+                    <div class="skill-items">
+                        <div class="skill-item"><span class="skill-name">PyTorch</span>
+                            <div class="skill-bar">
+                                <div class="skill-fill" style="--w:85%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item"><span class="skill-name">YOLOv5 / Computer Vision</span>
+                            <div class="skill-bar">
+                                <div class="skill-fill" style="--w:80%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item"><span class="skill-name">Machine Learning (OOP)</span>
+                            <div class="skill-bar">
+                                <div class="skill-fill" style="--w:75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="skill-group reveal">
+                    <h4 class="skill-group-title">PROGRAMMING</h4>
+                    <div class="skill-items">
+                        <div class="skill-item"><span class="skill-name">Python</span>
+                            <div class="skill-bar">
+                                <div class="skill-fill" style="--w:90%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item"><span class="skill-name">C++ / Arduino</span>
+                            <div class="skill-bar">
+                                <div class="skill-fill" style="--w:70%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item"><span class="skill-name">Web (HTML/CSS/JS)</span>
+                            <div class="skill-bar">
+                                <div class="skill-fill" style="--w:75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="skill-group reveal">
+                    <h4 class="skill-group-title">SYSTEMS</h4>
+                    <div class="skill-items">
+                        <div class="skill-item"><span class="skill-name">MySQL</span>
+                            <div class="skill-bar">
+                                <div class="skill-fill" style="--w:80%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item"><span class="skill-name">Linux Administration</span>
+                            <div class="skill-bar">
+                                <div class="skill-fill" style="--w:75%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item"><span class="skill-name">IoT / Embedded Systems</span>
+                            <div class="skill-bar">
+                                <div class="skill-fill" style="--w:70%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Brain Section -->
+        <section id="ai-brain" class="ai-section">
+            <div class="section-label">
+                <span class="label-num">04</span>
+                <span class="label-text">AI BRAIN</span>
+            </div>
+            <h2 class="section-heading centered">Talk to my<br><em>AI Representative.</em></h2>
+            <p class="ai-desc">Standalone Portfolio-Brain — ask anything about my projects, skills, or background. Works
+                offline in English & Kiswahili.</p>
+
+            <div class="chat-wrapper">
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <div class="chat-header-left">
+                            <div class="chat-avatar">
+                                <span>L</span>
+                                <span class="avatar-ring"></span>
+                            </div>
+                            <div>
+                                <div class="chat-name">PORTFOLIO-BRAIN v4.0</div>
+                                <div class="chat-subtitle">
+                                    <span class="online-dot" id="ai-status-dot"></span>
+                                    <span id="ai-status-text">Standalone Mode</span> · <a href="#" id="activate-online"
+                                        style="color: var(--accent); text-decoration: underline; font-size: 0.8rem;">Go
+                                        Online</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="terminal-controls">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+
+                    <div id="chat-box" class="chat-box">
+                        <div class="message ai">
+                            <div class="message-inner">
+                                <strong>PORTFOLIO-BRAIN:</strong> Habari! 👋 I'm Linus's AI representative. Ask me about
+                                his projects, skills, or experience — in English or Kiswahili.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quick-prompts">
+                        <button class="quick-btn" onclick="quickPrompt('Tell me about the YOLOv5 Traffic Model')">YOLOv5
+                            Project</button>
+                        <button class="quick-btn"
+                            onclick="quickPrompt('What are Linus\'s main skills?')">Skills</button>
+                        <button class="quick-btn"
+                            onclick="quickPrompt('Je, unaweza kunielezea kuhusu Linus?')">Swahili</button>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <input type="text" id="user-input" placeholder="Ask anything about Linus..." autocomplete="off">
+                        <button id="send-btn" onclick="handleChat()" aria-label="Send">
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Online Mode Setup (Hidden by default) -->
+                    <div id="online-setup" class="online-setup"
+                        style="display: none; padding: 1rem; border-top: 1px solid rgba(232, 255, 71, 0.1); background: rgba(0,0,0,0.2);">
+                        <p style="font-size: 0.8rem; margin-bottom: 0.5rem; color: var(--accent);">Enter Gemini API Key
+                            for this session:</p>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="password" id="api-key-input" placeholder="Paste your key here..."
+                                style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--accent); color: white; padding: 0.4rem; border-radius: 4px; font-size: 0.8rem;">
+                            <button id="save-key-btn"
+                                style="background: var(--accent); color: var(--bg); border: none; padding: 0.4rem 0.8rem; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">ACTIVATE</button>
+                        </div>
+                        <p style="font-size: 0.7rem; margin-top: 0.4rem; opacity: 0.6;">Your key is only used during
+                            this session and never stored on GitHub.</p>
+                    </div>
+                </div>
+                <div class="chat-info-panel">
+                    <div class="info-card">
+                        <div class="info-icon">🧠</div>
+                        <h4>Standalone AI</h4>
+                        <p>No internet required. This AI is built directly into the portfolio for private and fast
+                            communication.</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">🌍</div>
+                        <h4>Bilingual</h4>
+                        <p>Communicates fluently in English and Kiswahili — ask your question in either language.</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">⚡</div>
+                        <h4>Instant Response</h4>
+                        <p>Optimized for speed and accuracy regarding Linus's project history and engineering
+                            background.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">LLR<span class="dot">.</span></div>
+                <p class="footer-tagline">Building tomorrow's intelligence, today.</p>
+            </div>
+            <div class="footer-center">
+                <p>&copy; 2026 Linus Lucas Rwechoka</p>
+                <p class="footer-sub">AI Engineer · UAUT · Tanzania</p>
+            </div>
+            <div class="footer-right">
+                <a href="https://github.com/Sun-Eazi" target="_blank" class="footer-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                    </svg>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
