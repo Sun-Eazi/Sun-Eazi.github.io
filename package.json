@@ -1,10 +1,11 @@
 {
   "name": "linus-portfolio-backend",
   "version": "4.0.0",
-  "description": "Portfolio-Brain Backend — AI proxy server for Linus Lucas Rwechoka's portfolio",
+  "description": "Portfolio-Brain Backend — AI proxy server for Linus Lucas Rwechoka",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "build": "npm install",
     "dev": "nodemon server.js"
   },
   "dependencies": {
