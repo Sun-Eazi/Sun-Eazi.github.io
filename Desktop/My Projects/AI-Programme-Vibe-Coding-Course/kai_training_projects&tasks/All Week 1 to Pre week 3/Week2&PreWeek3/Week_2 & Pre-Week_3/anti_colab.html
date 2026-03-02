@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antigravity & Colab GPU Setup Guide</title>
+    <style>
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: #e67e22;
+            margin-top: 30px;
+        }
+
+        .step {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        code {
+            background-color: #eee;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        pre {
+            background: #2d3436;
+            color: #dfe6e9;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .highlight {
+            color: #d63031;
+            font-weight: bold;
+        }
+
+        .tip {
+            background: #e1f5fe;
+            border-left: 5px solid #03a9f4;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .bonus {
+            border: 2px solid #6c5ce7;
+            background-color: #f3f0ff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Antigravity IDE & Colab GPU Setup Guide</h1>
+    <p>This guide covers how to install the Antigravity IDE, connect to Google Colab GPU resources, and configure your
+        Gemini API to train our Tanzanian local transport (Bajaj, Bodaboda, Daladala) classification model.</p>
+
+    <div class="step">
+        <h2>Step 1: Download & Install Antigravity IDE</h2>
+        <ul>
+            <li>Download the installation file suitable for your operating system (Windows, Mac, etc.) from the official
+                Antigravity distribution site.</li>
+            <li>Run the downloaded file to complete the installation, and then launch the application.</li>
+        </ul>
+    </div>
+
+    <div class="step">
+        <h2>Step 2: Install the Google Colab Extension</h2>
+        <ul>
+            <li>Click the <strong>Extensions</strong> icon on the left sidebar of Antigravity.</li>
+            <li>Type <code>Google Colab</code> in the search bar and install the official extension.</li>
+        </ul>
+    </div>
+
+    <div class="step">
+        <h2>Step 3: Connect the GPU Runtime (CRITICAL)</h2>
+        <p>This is where we request a dedicated AI Training GPU instead of a standard CPU.</p>
+
+        <ol>
+            <li>Click the <strong>Colab</strong> button located in the center of the top toolbar.</li>
+            <li>Select the <code>Connect to Google Colab...</code> menu.</li>
+            <li>When the <strong>Select a variant</strong> window appears, you MUST select <span
+                    class="highlight">GPU</span>.</li>
+            <li>Complete the Google account login and authorization popup.</li>
+        </ol>
+    </div>
+
+    <div class="step">
+        <h2>Step 4: Verify Your Connection</h2>
+        <p>Check if the kernel name in the top right corner has changed to <code>Python 3 (Google Colab)</code>. Then,
+            run the following code in the first cell to verify your hardware:</p>
+        <pre>!nvidia-smi</pre>
+
+        <p>If you see a table displaying your assigned GPU information (like Tesla T4), you have succeeded!</p>
+    </div>
+
+    <div class="step bonus">
+        <h2>Step 5: Configure the Gemini API (Provided by Instructor)</h2>
+        <p>To prevent hitting the usage limits of the default model, we will register the API key provided by the
+            instructor to access the highest performance model.</p>
+
+        <ol>
+            <li>Click the <strong>Model Name (e.g., Gemini 3 Flash)</strong> located just above the agent chat input
+                box.</li>
+            <li>Go to the settings at the bottom of the list, or navigate to the <strong>'Account'</strong> tab in the
+                sidebar.</li>
+            <li>Find the <code>Google</code> section and paste the <strong>API Key</strong> you received from the
+                instructor.</li>
+            <li>Go back to the model selection window and select <strong>Gemini 1.5 Pro</strong> (or Gemini 3 if
+                instructed).</li>
+        </ol>
+    </div>
+
+    <div class="step">
+        <h2>Step 6: Your First Command (Mount Google Drive)</h2>
+        <p>Now, we command our AI Agent to prepare the workspace for our training data.</p>
+        <div class="tip">
+            <strong>Copy and paste this exact prompt into the Agent chat box:</strong><br><br>
+            "The GPU connection and Gemini API setup are complete. Could you write and execute the Python code to mount
+            my Google Drive to this server so we can load our training data?"
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>⚠️ PM Security Rules & Precautions</h2>
+        <ul>
+            <li><strong>File Extension:</strong> You MUST be working inside a <code>.ipynb</code> (Jupyter Notebook)
+                file for the Colab menus to activate.</li>
+            <li><strong>Session Timeout:</strong> If you are inactive for a certain period, Google will disconnect your
+                GPU. Keep an eye on it!</li>
+            <li><strong>Security:</strong> NEVER save the provided API key as plain text inside your notebook files.
+                Keep it strictly in the Account settings.</li>
+        </ul>
+    </div>
+
+    <footer style="margin-top: 50px; font-size: 0.9em; color: #7f8c8d; text-align: center;">
+        Created by: Dada Jang | 2026 Tanzania AI Education Material
+    </footer>
+
+</body>
+
+</html>

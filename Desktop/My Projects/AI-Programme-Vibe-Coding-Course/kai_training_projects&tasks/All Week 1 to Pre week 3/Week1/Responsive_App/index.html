@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-AI Bridge | Tanzania AI Vision System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --kaki: #C8A96E;
+            --flame: #E8531A;
+            --night: #0A0A0B;
+            --ink: #111214;
+            --zinc: #1C1E22;
+            --zinc2: #252830;
+            --mist: #6B7280;
+            --light: #E8E6DF;
+            --white: #F5F3EE;
+            --green: #2ECC71;
+            --red: #E74C3C;
+            --amber: #F39C12;
+            --blue: #3498DB;
+
+            --font-title: 'Bebas Neue', sans-serif;
+            --font-mono: 'Space Mono', monospace;
+            --font-body: 'Syne', sans-serif;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--night);
+            color: var(--light);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ─── NOISE TEXTURE OVERLAY ─── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.4;
+        }
+
+        /* ─── SCROLLBAR ─── */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--ink); }
+        ::-webkit-scrollbar-thumb { background: var(--kaki); border-radius: 2px; }
+
+        /* ─── NAV ─── */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(10,10,11,0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(200,169,110,0.15);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-logo .logo-badge {
+            width: 36px; height: 36px;
+            background: var(--flame);
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            font-family: var(--font-title);
+            font-size: 1rem;
+            letter-spacing: 0;
+            color: white;
+        }
+
+        .nav-logo span {
+            font-family: var(--font-title);
+            font-size: 1.25rem;
+            letter-spacing: 0.12em;
+            color: var(--white);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--mist);
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--kaki); }
+
+        .nav-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+            color: var(--green);
+            letter-spacing: 0.08em;
+        }
+
+        .status-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.7); }
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 24px; height: 2px;
+            background: var(--light);
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        /* ─── HERO ─── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-grid-bg {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(200,169,110,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(200,169,110,0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 100%);
+        }
+
+        .hero-glow {
+            position: absolute;
+            top: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px; height: 500px;
+            background: radial-gradient(ellipse, rgba(232,83,26,0.18) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-tag {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--flame);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: fadeUp 0.8s ease both;
+        }
+
+        .hero-tag::before {
+            content: '';
+            display: block;
+            width: 32px; height: 1px;
+            background: var(--flame);
+        }
+
+        .hero-title {
+            font-family: var(--font-title);
+            font-size: clamp(4rem, 12vw, 10rem);
+            line-height: 0.92;
+            letter-spacing: 0.02em;
+            color: var(--white);
+            animation: fadeUp 0.8s 0.1s ease both;
+        }
+
+        .hero-title .accent {
+            color: var(--kaki);
+            display: block;
+        }
+
+        .hero-title .outline {
+            -webkit-text-stroke: 2px rgba(248,243,238,0.25);
+            color: transparent;
+            display: block;
+        }
+
+        .hero-bottom {
+            margin-top: 3rem;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 2rem;
+            flex-wrap: wrap;
+            animation: fadeUp 0.8s 0.2s ease both;
+        }
+
+        .hero-desc {
+            max-width: 480px;
+            color: var(--mist);
+            font-size: 0.95rem;
+            line-height: 1.75;
+        }
+
+        .hero-desc strong { color: var(--kaki); font-weight: 600; }
+
+        .hero-meta {
+            display: flex;
+            gap: 2rem;
+            text-align: right;
+        }
+
+        .hero-meta-item span {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--mist);
+        }
+
+        .hero-meta-item strong {
+            font-family: var(--font-title);
+            font-size: 1.5rem;
+            letter-spacing: 0.05em;
+            color: var(--flame);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ─── SECTION BASE ─── */
+        section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--flame);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            max-width: 60px;
+            height: 1px;
+            background: var(--flame);
+            opacity: 0.5;
+        }
+
+        .section-title {
+            font-family: var(--font-title);
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            line-height: 1.05;
+            letter-spacing: 0.04em;
+            color: var(--white);
+            margin-bottom: 3rem;
+        }
+
+        /* ─── OVERVIEW CARDS ─── */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--zinc);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(200,169,110,0.3);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--flame), var(--kaki));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover::before { opacity: 1; }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .card h3 {
+            font-family: var(--font-title);
+            font-size: 1.3rem;
+            letter-spacing: 0.06em;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: var(--mist);
+            font-size: 0.88rem;
+            line-height: 1.7;
+        }
+
+        .card-tag {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 1rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 100px;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 700;
+            gap: 0.4rem;
+        }
+
+        .tag-pass { background: rgba(46,204,113,0.12); color: var(--green); border: 1px solid rgba(46,204,113,0.25); }
+        .tag-fail { background: rgba(231,76,60,0.12); color: var(--red); border: 1px solid rgba(231,76,60,0.25); }
+        .tag-demo { background: rgba(52,152,219,0.12); color: var(--blue); border: 1px solid rgba(52,152,219,0.25); }
+        .tag-warn { background: rgba(243,156,18,0.12); color: var(--amber); border: 1px solid rgba(243,156,18,0.25); }
+
+        /* ─── DIVIDER ─── */
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(200,169,110,0.25), transparent);
+            margin: 0;
+        }
+
+        /* ─── CODE BLOCK ─── */
+        .code-block {
+            background: var(--ink);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            line-height: 1.8;
+            color: var(--light);
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .code-dots { display: flex; gap: 6px; }
+        .code-dots span {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+        }
+        .code-dots span:nth-child(1) { background: #FF5F57; }
+        .code-dots span:nth-child(2) { background: #FFBD2E; }
+        .code-dots span:nth-child(3) { background: #28C840; }
+
+        .code-filename {
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            color: var(--mist);
+        }
+
+        .code-block .kw { color: #C792EA; }
+        .code-block .fn { color: #82AAFF; }
+        .code-block .str { color: #C3E88D; }
+        .code-block .cm { color: #546E7A; font-style: italic; }
+        .code-block .num { color: #F78C6C; }
+        .code-block .var { color: var(--kaki); }
+
+        /* ─── GAP TABLE ─── */
+        .gap-table-wrapper {
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.07);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+
+        th {
+            background: var(--zinc2);
+            color: var(--mist);
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 1rem 1.25rem;
+            text-align: left;
+            font-weight: 400;
+        }
+
+        td {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: var(--light);
+            line-height: 1.6;
+            vertical-align: top;
+        }
+
+        tr:hover td { background: rgba(200,169,110,0.04); }
+
+        td.feature-col {
+            font-weight: 700;
+            color: var(--kaki);
+            font-size: 0.82rem;
+        }
+
+        td .emoji { font-size: 1rem; }
+
+        td.result-fail {
+            color: var(--red);
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+        }
+
+        /* ─── RISK DEMO ─── */
+        .risk-demo {
+            background: var(--zinc);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .risk-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .risk-header h3 {
+            font-family: var(--font-title);
+            font-size: 1.8rem;
+            letter-spacing: 0.06em;
+        }
+
+        .risk-canvas-wrap {
+            position: relative;
+            background: var(--ink);
+            border-radius: 12px;
+            overflow: hidden;
+            height: 280px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        canvas#riskCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .risk-controls {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .risk-ctrl-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .risk-ctrl-group label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--mist);
+            margin-bottom: 0.5rem;
+        }
+
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--flame);
+        }
+
+        .risk-output {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .risk-stat {
+            flex: 1;
+            min-width: 140px;
+            background: var(--ink);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .risk-stat span {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--mist);
+            margin-bottom: 0.4rem;
+        }
+
+        .risk-stat strong {
+            font-family: var(--font-title);
+            font-size: 1.75rem;
+            letter-spacing: 0.04em;
+        }
+
+        .risk-stat.level-HIGH strong { color: var(--red); }
+        .risk-stat.level-MEDIUM strong { color: var(--amber); }
+        .risk-stat.level-LOW strong { color: var(--green); }
+
+        /* ─── ROADMAP ─── */
+        .roadmap {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            position: relative;
+        }
+
+        .roadmap::before {
+            content: '';
+            position: absolute;
+            left: 28px;
+            top: 0; bottom: 0;
+            width: 1px;
+            background: linear-gradient(to bottom, var(--flame), var(--kaki), transparent);
+        }
+
+        .roadmap-item {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem 0;
+            position: relative;
+        }
+
+        .roadmap-num {
+            flex-shrink: 0;
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: var(--zinc);
+            border: 2px solid rgba(200,169,110,0.4);
+            display: grid;
+            place-items: center;
+            font-family: var(--font-title);
+            font-size: 1.5rem;
+            letter-spacing: 0;
+            color: var(--kaki);
+            position: relative;
+            z-index: 1;
+        }
+
+        .roadmap-body h4 {
+            font-family: var(--font-title);
+            font-size: 1.4rem;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.5rem;
+            color: var(--white);
+        }
+
+        .roadmap-body p {
+            color: var(--mist);
+            font-size: 0.9rem;
+            line-height: 1.75;
+            max-width: 580px;
+        }
+
+        .roadmap-body .tech-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .pill {
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            background: rgba(200,169,110,0.1);
+            border: 1px solid rgba(200,169,110,0.2);
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.08em;
+            color: var(--kaki);
+        }
+
+        /* ─── DALADALA SECTION ─── */
+        .daladala-hero {
+            position: relative;
+            background: var(--zinc);
+            border-radius: 24px;
+            overflow: hidden;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .daladala-pattern {
+            position: absolute;
+            top: 0; right: 0;
+            width: 400px; height: 400px;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(232,83,26,0.04),
+                rgba(232,83,26,0.04) 10px,
+                transparent 10px,
+                transparent 20px
+            );
+            border-radius: 24px;
+            pointer-events: none;
+        }
+
+        .daladala-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            background: rgba(232,83,26,0.15);
+            border: 1px solid rgba(232,83,26,0.3);
+            border-radius: 100px;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--flame);
+        }
+
+        .daladala-hero h3 {
+            font-family: var(--font-title);
+            font-size: clamp(2rem, 5vw, 3rem);
+            letter-spacing: 0.04em;
+            line-height: 1;
+        }
+
+        .daladala-hero h3 em {
+            font-style: normal;
+            color: var(--kaki);
+        }
+
+        .daladala-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+
+        .daladala-card {
+            background: var(--ink);
+            border-radius: 12px;
+            padding: 1.25rem;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .daladala-card .dc-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .daladala-card h5 {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.35rem;
+        }
+
+        .daladala-card p {
+            font-size: 0.78rem;
+            color: var(--mist);
+            line-height: 1.6;
+        }
+
+        /* ─── FOOTER ─── */
+        footer {
+            border-top: 1px solid rgba(255,255,255,0.07);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .footer-logo {
+            font-family: var(--font-title);
+            font-size: 1.5rem;
+            letter-spacing: 0.12em;
+            color: var(--white);
+        }
+
+        .footer-logo span { color: var(--flame); }
+
+        .footer-meta {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            color: var(--mist);
+            line-height: 2;
+            text-align: right;
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 768px) {
+            nav { padding: 1rem; }
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+
+            .hero { padding: 7rem 1rem 3rem; }
+            section { padding: 4rem 1rem; }
+
+            .hero-meta { flex-direction: column; gap: 0.75rem; text-align: left; }
+            .hero-bottom { flex-direction: column; align-items: flex-start; }
+
+            .roadmap::before { left: 20px; }
+            .roadmap-num { width: 40px; height: 40px; font-size: 1rem; }
+            .roadmap-item { gap: 1rem; }
+
+            .daladala-hero { padding: 1.5rem; }
+            .footer-inner { flex-direction: column; text-align: center; }
+            .footer-meta { text-align: center; }
+        }
+
+        /* ─── SCROLL REVEAL ─── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ─── STAT COUNTER ─── */
+        .stats-bar {
+            display: flex;
+            gap: 0;
+            background: var(--zinc);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.06);
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            flex: 1;
+            min-width: 140px;
+            padding: 1.75rem 1.5rem;
+            text-align: center;
+            border-right: 1px solid rgba(255,255,255,0.06);
+            position: relative;
+        }
+
+        .stat-item:last-child { border-right: none; }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 25%; right: 25%;
+            height: 2px;
+            background: var(--flame);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .stat-item:hover::before { transform: scaleX(1); }
+
+        .stat-item .snum {
+            font-family: var(--font-title);
+            font-size: 2.5rem;
+            letter-spacing: 0.02em;
+            color: var(--kaki);
+            display: block;
+        }
+
+        .stat-item .slabel {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--mist);
+            margin-top: 0.25rem;
+            display: block;
+        }
+
+        /* Mobile nav overlay */
+        .nav-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 99;
+            background: rgba(10,10,11,0.97);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .nav-overlay.open { display: flex; }
+
+        .nav-overlay a {
+            font-family: var(--font-title);
+            font-size: 2.5rem;
+            letter-spacing: 0.1em;
+            color: var(--white);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-overlay a:hover { color: var(--kaki); }
+
+        .close-nav {
+            position: absolute;
+            top: 1.5rem; right: 1.5rem;
+            font-size: 1.5rem;
+            color: var(--mist);
+            cursor: pointer;
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+
+<!-- MOBILE NAV OVERLAY -->
+<div class="nav-overlay" id="navOverlay">
+    <button class="close-nav" onclick="toggleNav()">✕</button>
+    <a href="#overview" onclick="toggleNav()">Overview</a>
+    <a href="#audit" onclick="toggleNav()">Audit</a>
+    <a href="#risk" onclick="toggleNav()">Risk Engine</a>
+    <a href="#gap" onclick="toggleNav()">Gap Analysis</a>
+    <a href="#roadmap" onclick="toggleNav()">Roadmap</a>
+</div>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-logo">
+        <div class="logo-badge">KA</div>
+        <span>K-AI BRIDGE</span>
+    </div>
+    <ul class="nav-links">
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#audit">Audit</a></li>
+        <li><a href="#risk">Risk Engine</a></li>
+        <li><a href="#gap">Gap Analysis</a></li>
+        <li><a href="#roadmap">Roadmap</a></li>
+    </ul>
+    <div class="nav-status">
+        <div class="status-dot"></div>
+        SYSTEM LIVE
+    </div>
+    <div class="hamburger" onclick="toggleNav()">
+        <span></span><span></span><span></span>
+    </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-glow"></div>
+
+    <div class="hero-tag">Tanzania AI Vision Initiative · Week 1 Submission</div>
+
+    <h1 class="hero-title">
+        <span class="outline">KOREA</span>
+        <span class="accent">MEETS</span>
+        TANZANIA
+    </h1>
+
+    <div class="hero-bottom">
+        <p class="hero-desc">
+            An <strong>AI Training Data Audit System</strong> that validates Korean road datasets and adapts them for Tanzanian autonomous driving — starting with the humble <strong>Daladala</strong>.
+        </p>
+        <div class="hero-meta">
+            <div class="hero-meta-item">
+                <span>Auditor</span>
+                <strong>ANTIGRAVITY</strong>
+            </div>
+            <div class="hero-meta-item">
+                <span>Date</span>
+                <strong>FEB 2026</strong>
+            </div>
+            <div class="hero-meta-item">
+                <span>Status</span>
+                <strong>PASSED</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- STATS BAR -->
+<section id="overview" style="padding-top:4rem; padding-bottom:2rem;">
+    <div class="stats-bar reveal">
+        <div class="stat-item">
+            <span class="snum" data-target="3">0</span>
+            <span class="slabel">Levels Audited</span>
+        </div>
+        <div class="stat-item">
+            <span class="snum" data-target="7">0</span>
+            <span class="slabel">Max Level</span>
+        </div>
+        <div class="stat-item">
+            <span class="snum" data-target="4">0</span>
+            <span class="slabel">Gap Categories</span>
+        </div>
+        <div class="stat-item">
+            <span class="snum" data-target="3">0</span>
+            <span class="slabel">Roadmap Phases</span>
+        </div>
+        <div class="stat-item">
+            <span class="snum">100<small style="font-size:1.2rem">%</small></span>
+            <span class="slabel">Pass Rate</span>
+        </div>
+    </div>
+</section>
+
+<!-- OVERVIEW CARDS -->
+<section>
+    <div class="section-label">01 — System Overview</div>
+    <h2 class="section-title">WHAT IS<br>THIS SYSTEM?</h2>
+
+    <div class="overview-grid reveal">
+        <div class="card">
+            <div class="card-icon">🖥️</div>
+            <h3>OFFLINE DATA ENGINE</h3>
+            <p>Runs fully on your local CPU/GPU. Python scripts process images and annotation JSON files — no internet needed during execution.</p>
+            <span class="card-tag tag-demo">● Local Runtime</span>
+        </div>
+        <div class="card">
+            <div class="card-icon">🔬</div>
+            <h3>QUALITY AUDIT TOOL</h3>
+            <p>Validates AI training data quality. Reads raw Korean road images, verifies bounding box accuracy, and tests logic at Levels 1–7.</p>
+            <span class="card-tag tag-pass">● Functional</span>
+        </div>
+        <div class="card">
+            <div class="card-icon">🌍</div>
+            <h3>TANZANIA ADAPTER</h3>
+            <p>Identifies where Korean road data fails for Tanzanian context — Daladalas, overloaded vehicles, unstructured stops, vivid paintwork.</p>
+            <span class="card-tag tag-warn">● In Progress</span>
+        </div>
+        <div class="card">
+            <div class="card-icon">📱</div>
+            <h3>PWA TARGET</h3>
+            <p>Final form: a mobile web app (Progressive Web App) using TensorFlow.js so AI runs offline in-browser on inspectors' phones.</p>
+            <span class="card-tag tag-demo">● Phase 3</span>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- AUDIT RESULTS -->
+<section id="audit">
+    <div class="section-label">02 — Mission Report</div>
+    <h2 class="section-title">THE AUDIT<br>RESULTS</h2>
+
+    <div class="overview-grid reveal">
+        <div class="card">
+            <div class="card-icon">🟢</div>
+            <h3>LEVEL 1: Hello World</h3>
+            <p>Basic detection — find cars fast and get simple coordinates. Successfully extracted bounding boxes from both Korean ZIP datasets.</p>
+            <div class="code-block" style="margin-top:1rem; padding: 1rem; font-size:0.72rem;">
+                <span class="var">"bbox"</span>: [<span class="num">1054</span>, <span class="num">391</span>, <span class="num">628</span>, <span class="num">392</span>]
+            </div>
+            <span class="card-tag tag-pass">✓ PASSED</span>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🟢</div>
+            <h3>LEVEL 2: JSON Ready</h3>
+            <p>Ensure database-ready JSON format. Handles both standard <code style="color:var(--kaki);font-size:0.8em">bbox</code> keys and complex <code style="color:var(--kaki);font-size:0.8em">points</code> polygon arrays in the Korean dataset.</p>
+            <span class="card-tag tag-pass">✓ PASSED</span>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🟢</div>
+            <h3>LEVEL 3: Multi-Class</h3>
+            <p>Distinguish vehicle types. Found: General Vehicle (SUV/Van), Purpose Vehicle (Ambulance), Truck — all correctly classified via <code style="color:var(--kaki);font-size:0.8em">attributes</code> keys.</p>
+            <span class="card-tag tag-pass">✓ PASSED</span>
+        </div>
+
+        <div class="card">
+            <div class="card-icon">🔵</div>
+            <h3>LEVEL 7: Risk Logic</h3>
+            <p>CoT safety analysis. If two car centers are &lt;300px apart, warn. Demo showed MEDIUM RISK at ~236px distance between two vehicles.</p>
+            <span class="card-tag tag-demo">✦ DEMONSTRATED</span>
+        </div>
+    </div>
+</section>
+
+<!-- CODE VIEWER -->
+<section style="padding-top:0;">
+    <div class="reveal">
+        <h3 style="font-family:var(--font-title);font-size:1.5rem;letter-spacing:0.05em;margin-bottom:1.5rem; color:var(--white);">SOURCE FILES</h3>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1.5rem;">
+
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-dots"><span></span><span></span><span></span></div>
+                    <span class="code-filename">process_week1_data.py</span>
+                </div>
+<span class="kw">import</span> zipfile, os, json
+<span class="kw">from</span> PIL <span class="kw">import</span> Image, ImageDraw
+
+<span class="cm"># Korean ZIP datasets</span>
+<span class="var">ZIP_FILES</span> = [
+  <span class="str">"1주차_보이데이터.zip"</span>,
+  <span class="str">"1주차_데이터.zip"</span>
+]
+
+<span class="kw">def</span> <span class="fn">extract_and_visualize</span>(zip_path):
+  <span class="cm">"""Extract image + JSON pair, draw bboxes"""</span>
+  <span class="kw">with</span> zipfile.ZipFile(zip_path) <span class="kw">as</span> z:
+    images = [f <span class="kw">for</span> f <span class="kw">in</span> z.namelist()
+              <span class="kw">if</span> f.endswith((<span class="str">'.png'</span>,<span class="str">'.jpg'</span>))]
+    <span class="cm"># Find image-json pairs and visualize</span>
+    <span class="fn">create_png_visualization</span>(img, ann, name)
+            </div>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-dots"><span></span><span></span><span></span></div>
+                    <span class="code-filename">vibe_logic_demo.py</span>
+                </div>
+<span class="kw">import</span> math
+
+<span class="kw">def</span> <span class="fn">calculate_risk</span>(obj1, obj2):
+  <span class="cm">"""Level 7: Proximity-based risk"""</span>
+  c1 = [obj1[<span class="str">'bbox'</span>][<span class="num">0</span>] + obj1[<span class="str">'bbox'</span>][<span class="num">2</span>]/<span class="num">2</span>,
+        obj1[<span class="str">'bbox'</span>][<span class="num">1</span>] + obj1[<span class="str">'bbox'</span>][<span class="num">3</span>]/<span class="num">2</span>]
+  c2 = [obj2[<span class="str">'bbox'</span>][<span class="num">0</span>] + obj2[<span class="str">'bbox'</span>][<span class="num">2</span>]/<span class="num">2</span>,
+        obj2[<span class="str">'bbox'</span>][<span class="num">1</span>] + obj2[<span class="str">'bbox'</span>][<span class="num">3</span>]/<span class="num">2</span>]
+  dist = math.<span class="fn">sqrt</span>((c1[<span class="num">0</span>]-c2[<span class="num">0</span>])**<span class="num">2</span>
+                 + (c1[<span class="num">1</span>]-c2[<span class="num">1</span>])**<span class="num">2</span>)
+  <span class="kw">if</span> dist &lt; <span class="num">100</span>:   <span class="kw">return</span> <span class="str">"HIGH"</span>, dist
+  <span class="kw">elif</span> dist &lt; <span class="num">300</span>: <span class="kw">return</span> <span class="str">"MEDIUM"</span>, dist
+  <span class="kw">else</span>:            <span class="kw">return</span> <span class="str">"LOW"</span>, dist
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- RISK ENGINE DEMO -->
+<section id="risk">
+    <div class="section-label">03 — Live Demo</div>
+    <h2 class="section-title">LEVEL 7<br>RISK ENGINE</h2>
+
+    <div class="risk-demo reveal">
+        <div class="risk-header">
+            <h3>Proximity Risk Calculator</h3>
+            <span class="card-tag tag-demo" id="riskBadge">● MEDIUM RISK</span>
+        </div>
+
+        <div class="risk-canvas-wrap">
+            <canvas id="riskCanvas"></canvas>
+        </div>
+
+        <div class="risk-controls">
+            <div class="risk-ctrl-group">
+                <label>Car 1 — X Position</label>
+                <input type="range" id="car1x" min="50" max="600" value="150" oninput="updateRisk()">
+            </div>
+            <div class="risk-ctrl-group">
+                <label>Car 2 — X Position</label>
+                <input type="range" id="car2x" min="50" max="700" value="420" oninput="updateRisk()">
+            </div>
+            <div class="risk-ctrl-group">
+                <label>Car 1 — Y Position</label>
+                <input type="range" id="car1y" min="50" max="220" value="120" oninput="updateRisk()">
+            </div>
+            <div class="risk-ctrl-group">
+                <label>Car 2 — Y Position</label>
+                <input type="range" id="car2y" min="50" max="220" value="140" oninput="updateRisk()">
+            </div>
+        </div>
+
+        <div class="risk-output">
+            <div class="risk-stat" id="distStat">
+                <span>Distance (px)</span>
+                <strong id="distVal">—</strong>
+            </div>
+            <div class="risk-stat" id="riskStat">
+                <span>Risk Level</span>
+                <strong id="riskVal">—</strong>
+            </div>
+            <div class="risk-stat">
+                <span>Threshold LOW</span>
+                <strong style="color:var(--green)">300px</strong>
+            </div>
+            <div class="risk-stat">
+                <span>Threshold HIGH</span>
+                <strong style="color:var(--red)">100px</strong>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- GAP ANALYSIS TABLE -->
+<section id="gap">
+    <div class="section-label">04 — Gap Analysis</div>
+    <h2 class="section-title">KOREA vs<br>TANZANIA</h2>
+
+    <div class="gap-table-wrapper reveal">
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th><span class="emoji">🇰🇷</span> Korean AI Standard</th>
+                    <th><span class="emoji">🇹🇿</span> Tanzanian Reality</th>
+                    <th>Impact</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="feature-col">Object Name</td>
+                    <td>"Bus", "Shuttle"</td>
+                    <td>"Daladala"</td>
+                    <td class="result-fail">MISCLASSIFICATION — AI ignores cultural context</td>
+                </tr>
+                <tr>
+                    <td class="feature-col">Passenger Load</td>
+                    <td>Strict occupancy laws. Controlled.</td>
+                    <td>Overloaded — passengers hang on sides</td>
+                    <td class="result-fail">SAFETY FAILURE — AI sees people as noise, not part of vehicle</td>
+                </tr>
+                <tr>
+                    <td class="feature-col">Road Norms</td>
+                    <td>Designated stops only</td>
+                    <td>Stops anywhere, unpredictably</td>
+                    <td class="result-fail">PREDICTION FAILURE — AI expects bus to keep moving</td>
+                </tr>
+                <tr>
+                    <td class="feature-col">Visuals</td>
+                    <td>Clean, standardized paintwork</td>
+                    <td>Vibrant art, custom decals</td>
+                    <td class="result-fail">DETECTION FAILURE — AI may classify art as billboard</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DALADALA SECTION -->
+<section>
+    <div class="daladala-hero reveal">
+        <div class="daladala-pattern"></div>
+        <div class="daladala-badge">🚌 Daladala Focus</div>
+        <h3>THE AI DOESN'T<br>KNOW <em>DALADALA</em></h3>
+        <p style="color:var(--mist); max-width:500px; line-height:1.75; font-size:0.9rem;">
+            The Korean model sees a bus. But Daladala is not a bus. It's culture, chaos, and community on wheels — and teaching AI to understand that is our mission.
+        </p>
+        <div class="daladala-grid">
+            <div class="daladala-card">
+                <div class="dc-icon">🎨</div>
+                <h5>Custom Paintwork</h5>
+                <p>Vivid murals confuse object detection. AI misreads decals as separate objects.</p>
+            </div>
+            <div class="daladala-card">
+                <div class="dc-icon">👥</div>
+                <h5>Hanging Passengers</h5>
+                <p>"Person" bboxes overlapping vehicle >50% need <code style="color:var(--kaki)">is_overloaded: true</code> flag.</p>
+            </div>
+            <div class="daladala-card">
+                <div class="dc-icon">📍</div>
+                <h5>Informal Stops</h5>
+                <p>No fixed stops. AI prediction models must learn to expect sudden braking anywhere.</p>
+            </div>
+            <div class="daladala-card">
+                <div class="dc-icon">🔤</div>
+                <h5>Re-Labeling Script</h5>
+                <p>Phase 1: Rename all "Bus" labels to "Daladala" in JSON files for local model training.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+    <div class="section-label">05 — Deployment Plan</div>
+    <h2 class="section-title">THREE-PHASE<br>ROADMAP</h2>
+
+    <div class="roadmap reveal">
+        <div class="roadmap-item">
+            <div class="roadmap-num">1</div>
+            <div class="roadmap-body">
+                <h4>RE-LABELING THE AUDIT</h4>
+                <p>Take Korean "Bus" annotation data and run a script to universally rename labels to "Daladala" in all JSON files. Collect 50+ local Daladala images to retrain the visual detection layer with real Tanzanian context.</p>
+                <div class="tech-pills">
+                    <span class="pill">Python</span>
+                    <span class="pill">JSON Parsing</span>
+                    <span class="pill">PIL / Pillow</span>
+                    <span class="pill">Bounding Box Viz</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="roadmap-item">
+            <div class="roadmap-num">2</div>
+            <div class="roadmap-body">
+                <h4>LOGIC ADAPTATION</h4>
+                <p>Update Level 4 (Attribute Extraction) to handle overloaded Daladalas. Add boolean attribute <code style="color:var(--kaki); font-size:0.85em">is_overloaded</code> when "Person" bounding boxes overlap >50% with a vehicle box. This teaches the AI to recognize cultural loading norms as safety data, not noise.</p>
+                <div class="tech-pills">
+                    <span class="pill">IoU Calculation</span>
+                    <span class="pill">Attribute Flags</span>
+                    <span class="pill">Level 4–7 Logic</span>
+                    <span class="pill">Safety Rules</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="roadmap-item">
+            <div class="roadmap-num">3</div>
+            <div class="roadmap-body">
+                <h4>PWA DEPLOYMENT</h4>
+                <p>Package the system as a Progressive Web App. TensorFlow.js runs the AI model directly in the mobile browser — no internet required after initial load. Inspectors and drivers can use it offline anywhere in Tanzania.</p>
+                <div class="tech-pills">
+                    <span class="pill">TensorFlow.js</span>
+                    <span class="pill">PWA / Service Workers</span>
+                    <span class="pill">Offline-First</span>
+                    <span class="pill">Mobile Optimized</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-inner">
+        <div class="footer-logo">K-AI <span>BRIDGE</span></div>
+        <div class="footer-meta">
+            Week 1 Submission · AI Programme Vibe Coding<br>
+            Audited by Antigravity · February 2026<br>
+            <span style="color:var(--flame)">Status: All Levels 1–3 PASSED · Level 7 DEMONSTRATED</span>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // ─── MOBILE NAV ───
+    function toggleNav() {
+        document.getElementById('navOverlay').classList.toggle('open');
+    }
+
+    // ─── SCROLL REVEAL ───
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('visible');
+                observer.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.12 });
+    reveals.forEach(r => observer.observe(r));
+
+    // ─── STAT COUNTERS ───
+    function animateCounter(el) {
+        const target = parseInt(el.dataset.target);
+        if (!target) return;
+        let current = 0;
+        const inc = target / 40;
+        const timer = setInterval(() => {
+            current += inc;
+            if (current >= target) { current = target; clearInterval(timer); }
+            el.textContent = Math.floor(current);
+        }, 30);
+    }
+
+    const statObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.querySelectorAll('[data-target]').forEach(animateCounter);
+                statObserver.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.4 });
+
+    document.querySelectorAll('.stats-bar').forEach(b => statObserver.observe(b));
+
+    // ─── RISK ENGINE CANVAS ───
+    const canvas = document.getElementById('riskCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+        const wrap = canvas.parentElement;
+        canvas.width = wrap.clientWidth;
+        canvas.height = wrap.clientHeight;
+        updateRisk();
+    }
+
+    function calculateRisk(c1, c2) {
+        const dx = c1.x - c2.x;
+        const dy = c1.y - c2.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        let level = 'LOW';
+        if (dist < 100) level = 'HIGH';
+        else if (dist < 300) level = 'MEDIUM';
+        return { dist, level };
+    }
+
+    const CAR_COLORS = { HIGH: '#E74C3C', MEDIUM: '#F39C12', LOW: '#2ECC71' };
+
+    function drawCar(x, y, label, color) {
+        const w = 80, h = 45;
+        const bx = x - w/2, by = y - h/2;
+
+        // Shadow
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 20;
+
+        // Car body
+        ctx.fillStyle = color + '22';
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(bx, by, w, h, 8);
+        ctx.fill();
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Roof
+        ctx.fillStyle = color + '40';
+        ctx.beginPath();
+        ctx.roundRect(bx + 12, by - 16, w - 24, 18, 4);
+        ctx.fill();
+        ctx.stroke();
+
+        // Wheels
+        [bx + 16, bx + w - 16].forEach(wx => {
+            ctx.fillStyle = '#111';
+            ctx.strokeStyle = color + '88';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.ellipse(wx, by + h, 10, 7, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+        });
+
+        // Label
+        ctx.fillStyle = color;
+        ctx.font = `700 11px 'Space Mono', monospace`;
+        ctx.textAlign = 'center';
+        ctx.fillText(label, x, by - 22);
+
+        // Center dot
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    function updateRisk() {
+        if (!canvas.width) return;
+        const W = canvas.width, H = canvas.height;
+
+        const c1x = parseInt(document.getElementById('car1x').value);
+        const c2x = parseInt(document.getElementById('car2x').value);
+        const c1y = parseInt(document.getElementById('car1y').value);
+        const c2y = parseInt(document.getElementById('car2y').value);
+
+        // Scale slider values to canvas dimensions
+        const scale = W / 750;
+        const car1 = { x: c1x * scale, y: c1y * (H / 270) };
+        const car2 = { x: c2x * scale, y: c2y * (H / 270) };
+
+        const { dist, level } = calculateRisk(car1, car2);
+        const color = CAR_COLORS[level];
+
+        // Clear
+        ctx.clearRect(0, 0, W, H);
+
+        // Road background
+        const roadGrad = ctx.createLinearGradient(0, 0, 0, H);
+        roadGrad.addColorStop(0, '#111214');
+        roadGrad.addColorStop(1, '#0A0A0B');
+        ctx.fillStyle = roadGrad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Road lines
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < W; i += 80) {
+            ctx.beginPath();
+            ctx.moveTo(i, 0);
+            ctx.lineTo(i, H);
+            ctx.stroke();
+        }
+        for (let j = 0; j < H; j += 60) {
+            ctx.beginPath();
+            ctx.moveTo(0, j);
+            ctx.lineTo(W, j);
+            ctx.stroke();
+        }
+
+        // Distance line
+        const lineGrad = ctx.createLinearGradient(car1.x, car1.y, car2.x, car2.y);
+        lineGrad.addColorStop(0, color + 'CC');
+        lineGrad.addColorStop(1, color + 'CC');
+        ctx.strokeStyle = lineGrad;
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        ctx.moveTo(car1.x, car1.y);
+        ctx.lineTo(car2.x, car2.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Distance label on line
+        const midX = (car1.x + car2.x) / 2;
+        const midY = (car1.y + car2.y) / 2;
+        ctx.fillStyle = 'rgba(10,10,11,0.8)';
+        ctx.beginPath();
+        ctx.roundRect(midX - 35, midY - 12, 70, 22, 4);
+        ctx.fill();
+        ctx.fillStyle = color;
+        ctx.font = `700 10px 'Space Mono', monospace`;
+        ctx.textAlign = 'center';
+        ctx.fillText(`${Math.round(dist)}px`, midX, midY + 4);
+
+        // Risk zone circle
+        if (level === 'HIGH' || level === 'MEDIUM') {
+            const threshold = level === 'HIGH' ? 100 : 300;
+            ctx.strokeStyle = color + '20';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(car1.x, car1.y, threshold * 0.5, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        drawCar(car1.x, car1.y, 'CAR 1', color);
+        drawCar(car2.x, car2.y, 'CAR 2', color);
+
+        // Update stats
+        document.getElementById('distVal').textContent = Math.round(dist);
+        document.getElementById('riskVal').textContent = level;
+
+        const riskStat = document.getElementById('riskStat');
+        riskStat.className = `risk-stat level-${level}`;
+        document.getElementById('riskBadge').textContent = `● ${level} RISK`;
+        document.getElementById('riskBadge').style.color = color;
+        document.getElementById('riskBadge').style.borderColor = color + '44';
+        document.getElementById('riskBadge').style.background = color + '18';
+    }
+
+    // Resize and initialize
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    setTimeout(updateRisk, 200);
+</script>
+</body>
+</html>
