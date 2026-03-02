@@ -1,7 +1,7 @@
 {
   "name": "linus-portfolio-backend",
   "version": "4.0.0",
-  "description": "Portfolio-Brain Backend — AI proxy server for Linus Lucas Rwechoka",
+  "description": "Portfolio-Brain Backend — Gemini AI proxy for Linus Lucas Rwechoka",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
