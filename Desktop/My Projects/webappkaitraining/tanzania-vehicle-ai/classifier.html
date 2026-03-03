@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tanzania Vehicle AI — Full Classifier</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Fraunces:ital,wght@0,700;0,900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0d1117; --paper:#f5f0e8; --cream:#ede8dc;
+  --green:#1a6b3c; --green-light:#e8f5ee;
+  --blue:#1a3a6b; --orange:#c4531a;
+  --border:#c8bfa8; --muted:#7a7060; --surface:#1a2233;
+  --accent:#00e5a0;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--ink);color:var(--paper);font-family:'IBM Plex Mono',monospace;min-height:100vh;}
+
+/* HEADER */
+header{
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  padding:0 32px;
+  display:flex;align-items:center;gap:20px;min-height:64px;
+  background:rgba(255,255,255,0.02);
+}
+.back-link{
+  color:rgba(245,240,232,0.5);font-size:0.72rem;text-decoration:none;
+  letter-spacing:1px;display:flex;align-items:center;gap:6px;
+  transition:color 0.2s;
+}
+.back-link:hover{color:var(--accent);}
+.header-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;margin-left:auto;}
+.header-badge{
+  background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.25);
+  color:var(--accent);font-size:0.65rem;letter-spacing:2px;
+  padding:4px 12px;border-radius:2px;text-transform:uppercase;
+}
+
+/* API KEY SETUP */
+.setup-bar{
+  background:rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.08);
+  padding:16px 32px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.setup-label{font-size:0.7rem;color:rgba(245,240,232,0.5);letter-spacing:1px;white-space:nowrap;}
+.api-input{
+  flex:1;min-width:200px;max-width:400px;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
+  border-radius:3px;color:var(--paper);font-family:'IBM Plex Mono',monospace;
+  font-size:0.78rem;padding:8px 14px;outline:none;
+  transition:border-color 0.2s;
+}
+.api-input:focus{border-color:var(--accent);}
+.api-input::placeholder{color:rgba(245,240,232,0.25);}
+.btn-connect{
+  background:var(--accent);color:#0a1a12;
+  font-family:'IBM Plex Mono',monospace;font-size:0.72rem;font-weight:700;
+  padding:9px 20px;border:none;border-radius:3px;cursor:pointer;
+  letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;
+  white-space:nowrap;
+}
+.btn-connect:hover{background:#00c48a;}
+.api-status{
+  font-size:0.68rem;display:flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:2px;
+}
+.api-status.connected{background:rgba(0,229,160,0.1);color:var(--accent);border:1px solid rgba(0,229,160,0.2);}
+.api-status.disconnected{background:rgba(239,68,68,0.1);color:#fca5a5;border:1px solid rgba(239,68,68,0.2);}
+.api-status.disconnected::before{content:'●';margin-right:4px;color:#ef4444;animation:pulse 2s infinite;}
+.api-status.connected::before{content:'●';margin-right:4px;color:var(--accent);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.gemini-link{
+  font-size:0.68rem;color:rgba(245,240,232,0.4);text-decoration:none;
+  transition:color 0.2s;
+}
+.gemini-link:hover{color:var(--accent);}
+
+/* MAIN */
+.main{display:grid;grid-template-columns:360px 1fr;min-height:calc(100vh - 130px);}
+
+/* LEFT PANEL */
+.left-panel{
+  border-right:1px solid rgba(255,255,255,0.08);
+  padding:24px;display:flex;flex-direction:column;gap:20px;overflow-y:auto;
+}
+.panel-label{
+  font-size:0.65rem;color:rgba(245,240,232,0.35);
+  letter-spacing:2px;text-transform:uppercase;
+  padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);
+}
+
+/* DROP ZONE */
+.drop-zone{
+  border:2px dashed rgba(255,255,255,0.12);border-radius:6px;
+  padding:36px 16px;text-align:center;cursor:pointer;
+  transition:all 0.2s;position:relative;background:rgba(255,255,255,0.02);
+}
+.drop-zone:hover,.drop-zone.over{
+  border-color:var(--accent);background:rgba(0,229,160,0.04);
+}
+.drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.drop-icon{font-size:2rem;display:block;margin-bottom:10px;}
+.drop-zone h3{font-size:0.88rem;font-weight:700;margin-bottom:6px;}
+.drop-zone p{font-size:0.72rem;color:rgba(245,240,232,0.4);line-height:1.6;}
+.formats{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-top:10px;}
+.fmt{font-size:0.62rem;padding:2px 7px;background:rgba(255,255,255,0.07);border-radius:2px;color:rgba(245,240,232,0.4);}
+
+/* CONFIG */
+.cfg-label{font-size:0.68rem;color:rgba(245,240,232,0.4);display:block;margin-bottom:5px;letter-spacing:1px;}
+.cfg-input{
+  width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);
+  border-radius:3px;color:var(--paper);font-family:'IBM Plex Mono',monospace;
+  font-size:0.8rem;padding:9px 13px;outline:none;transition:border-color 0.2s;
+}
+.cfg-input:focus{border-color:var(--accent);}
+.cfg-input::placeholder{color:rgba(245,240,232,0.2);}
+
+/* QUEUE */
+.queue-list{display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto;}
+.queue-list::-webkit-scrollbar{width:3px;}
+.queue-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px;}
+.q-item{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 10px;background:rgba(255,255,255,0.04);
+  border-radius:3px;border:1px solid rgba(255,255,255,0.07);
+}
+.q-thumb{width:32px;height:32px;border-radius:3px;object-fit:cover;flex-shrink:0;}
+.q-name{flex:1;font-size:0.65rem;color:rgba(245,240,232,0.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.q-status{font-size:0.62rem;padding:2px 7px;border-radius:2px;font-weight:700;flex-shrink:0;}
+.s-pending{background:rgba(100,116,139,0.2);color:#94a3b8;}
+.s-processing{background:rgba(0,229,160,0.15);color:var(--accent);}
+.s-done{background:rgba(34,197,94,0.15);color:#86efac;}
+.s-error{background:rgba(239,68,68,0.12);color:#fca5a5;}
+
+.prog-wrap{background:rgba(255,255,255,0.06);height:3px;border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),#3b82f6);border-radius:2px;transition:width 0.4s;}
+.prog-txt{font-size:0.65rem;color:rgba(245,240,232,0.3);margin-top:4px;}
+
+/* CLASSIFY BTN */
+.btn-classify{
+  background:linear-gradient(135deg,var(--accent),#00b37a);
+  color:#0a1a12;font-family:'IBM Plex Mono',monospace;
+  font-size:0.82rem;font-weight:700;padding:13px;border:none;
+  border-radius:3px;cursor:pointer;width:100%;
+  letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-classify:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,229,160,0.2);}
+.btn-classify:disabled{opacity:0.35;cursor:not-allowed;transform:none;}
+
+/* RIGHT PANEL */
+.right-panel{display:flex;flex-direction:column;overflow:hidden;}
+.results-header{
+  padding:16px 24px;border-bottom:1px solid rgba(255,255,255,0.07);
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.results-header h2{font-family:'Fraunces',serif;font-size:0.95rem;}
+.r-counter{margin-left:auto;font-size:0.7rem;color:rgba(245,240,232,0.35);}
+
+/* STATS MINI */
+.stats-mini{
+  display:flex;border-bottom:1px solid rgba(255,255,255,0.07);
+  background:rgba(255,255,255,0.02);overflow-x:auto;
+}
+.sm-box{
+  flex:1;min-width:80px;padding:10px 8px;text-align:center;
+  border-right:1px solid rgba(255,255,255,0.06);
+}
+.sm-box:last-child{border-right:none;}
+.sm-n{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:900;}
+.sm-l{font-size:0.58rem;color:rgba(245,240,232,0.3);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px;}
+
+/* COLOR TAGS */
+.color-row{
+  padding:8px 20px;border-bottom:1px solid rgba(255,255,255,0.06);
+  display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:36px;
+}
+.clr-label{font-size:0.62rem;color:rgba(245,240,232,0.3);letter-spacing:1px;margin-right:4px;}
+.clr-tag{
+  font-size:0.62rem;font-weight:700;padding:2px 9px;
+  border-radius:100px;letter-spacing:0.5px;
+}
+
+/* EXPORT BTNS */
+.export-row{
+  padding:10px 20px;border-bottom:1px solid rgba(255,255,255,0.06);
+  display:flex;gap:8px;
+}
+.btn-export{
+  background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);
+  color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:0.7rem;
+  font-weight:700;padding:7px 14px;border-radius:3px;cursor:pointer;
+  transition:all 0.2s;letter-spacing:0.5px;
+}
+.btn-export:hover{border-color:var(--accent);color:var(--accent);}
+.btn-export:disabled{opacity:0.3;cursor:not-allowed;}
+
+/* RESULTS GRID */
+.results-grid{
+  flex:1;overflow-y:auto;padding:16px 20px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:12px;align-content:start;
+}
+.results-grid::-webkit-scrollbar{width:5px;}
+.results-grid::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px;}
+
+/* EMPTY */
+.empty{
+  grid-column:1/-1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:70px 20px;text-align:center;gap:10px;
+}
+.empty-icon{font-size:2.5rem;opacity:0.25;}
+.empty h3{font-family:'Fraunces',serif;font-size:0.95rem;opacity:0.35;}
+.empty p{font-size:0.72rem;color:rgba(245,240,232,0.25);line-height:1.6;max-width:260px;}
+
+/* RESULT CARD */
+.r-card{
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+  border-radius:6px;overflow:hidden;animation:fadeUp 0.3s ease;
+  transition:border-color 0.2s;
+}
+.r-card:hover{border-color:rgba(255,255,255,0.16);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.r-img-wrap{position:relative;height:130px;overflow:hidden;}
+.r-img-wrap img{width:100%;height:100%;object-fit:cover;}
+.r-overlay{
+  position:absolute;inset:0;background:rgba(13,17,23,0.82);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;
+}
+.r-spinner{
+  width:24px;height:24px;border:2px solid rgba(255,255,255,0.1);
+  border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.r-proc{font-size:0.65rem;color:var(--accent);animation:blink 1.2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.r-class-tag{
+  position:absolute;top:7px;left:7px;padding:3px 8px;border-radius:2px;
+  font-size:0.62rem;font-weight:700;color:white;backdrop-filter:blur(6px);
+}
+.r-color-tag{
+  position:absolute;top:7px;right:7px;padding:3px 8px;border-radius:2px;
+  font-size:0.6rem;font-weight:700;background:rgba(13,17,23,0.7);
+  color:var(--paper);display:flex;align-items:center;gap:4px;
+}
+.r-swatch{width:8px;height:8px;border-radius:50%;border:1px solid rgba(255,255,255,0.3);}
+.r-conf-bar{position:absolute;bottom:0;left:0;height:2px;transition:width 0.6s;}
+.r-body{padding:10px 12px;}
+.r-new-name{font-size:0.62rem;color:var(--accent);word-break:break-all;line-height:1.4;margin-bottom:4px;}
+.r-orig{font-size:0.6rem;color:rgba(245,240,232,0.3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.r-conf-txt{font-size:0.6rem;color:rgba(245,240,232,0.3);margin-top:3px;}
+.r-reason-btn{
+  background:none;border:none;color:rgba(245,240,232,0.3);
+  font-family:'IBM Plex Mono',monospace;font-size:0.6rem;
+  cursor:pointer;margin-top:5px;padding:0;transition:color 0.2s;
+}
+.r-reason-btn:hover{color:var(--paper);}
+.r-reason{
+  display:none;margin-top:6px;padding:7px;background:rgba(255,255,255,0.04);
+  border-radius:3px;font-size:0.62rem;color:rgba(245,240,232,0.5);
+  line-height:1.6;border:1px solid rgba(255,255,255,0.07);
+}
+.r-reason.open{display:block;}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:20px;right:20px;
+  background:rgba(26,34,51,0.95);border:1px solid rgba(255,255,255,0.12);
+  border-radius:6px;padding:12px 18px;font-size:0.78rem;
+  backdrop-filter:blur(12px);z-index:100;
+  transform:translateY(60px);opacity:0;transition:all 0.3s;max-width:280px;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.ok{border-color:rgba(0,229,160,0.35);}
+.toast.err{border-color:rgba(239,68,68,0.35);}
+
+@media(max-width:768px){
+  .main{grid-template-columns:1fr;}
+  .left-panel{border-right:none;border-bottom:1px solid rgba(255,255,255,0.08);}
+  header,.setup-bar,.left-panel,.results-header,.results-grid,.export-row{padding-left:16px;padding-right:16px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="back-link">← Demo</a>
+  <div class="header-title">🇹🇿 Tanzania Vehicle Classifier</div>
+  <span class="header-badge">Gemini AI</span>
+</header>
+
+<!-- API KEY BAR -->
+<div class="setup-bar">
+  <span class="setup-label">// GEMINI API KEY:</span>
+  <input class="api-input" type="password" id="apiKey" placeholder="AIza..." autocomplete="off">
+  <button class="btn-connect" onclick="connectAPI()">Connect</button>
+  <span class="api-status disconnected" id="apiStatus">Not connected</span>
+  <a class="gemini-link" href="https://aistudio.google.com/app/apikey" target="_blank">Get free key →</a>
+</div>
+
+<div class="main">
+
+  <!-- LEFT -->
+  <div class="left-panel">
+    <div class="panel-label">// Upload & Configure</div>
+
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileIn" accept="image/*" multiple>
+      <span class="drop-icon">📸</span>
+      <h3>Drop images here</h3>
+      <p>Any filename OK — AI classifies and renames automatically</p>
+      <div class="formats">
+        <span class="fmt">.jpg</span><span class="fmt">.png</span>
+        <span class="fmt">.webp</span><span class="fmt">.avif</span>
+        <span class="fmt">.jpeg</span>
+      </div>
+    </div>
+
+    <div>
+      <label class="cfg-label">Team Number</label>
+      <input class="cfg-input" id="teamNo" value="T01" placeholder="e.g. T01" maxlength="6">
+    </div>
+    <div>
+      <label class="cfg-label">Location / Area</label>
+      <input class="cfg-input" id="location" placeholder="e.g. Buguruni, Mbezi, Posta">
+    </div>
+
+    <div id="qSection" style="display:none">
+      <div class="panel-label">// Queue (<span id="qCount">0</span> files)</div>
+      <div class="queue-list" id="qList"></div>
+      <div class="prog-wrap" style="margin-top:8px">
+        <div class="prog-fill" id="prog" style="width:0%"></div>
+      </div>
+      <div class="prog-txt" id="progTxt"></div>
+    </div>
+
+    <button class="btn-classify" id="btnRun" disabled onclick="run()">
+      🤖 Classify All Images
+    </button>
+
+    <details>
+      <summary style="font-size:0.68rem;color:rgba(245,240,232,0.35);cursor:pointer;padding:6px 0;letter-spacing:1px">
+        // How to get Gemini API key ▾
+      </summary>
+      <div style="font-size:0.68rem;color:rgba(245,240,232,0.35);line-height:1.8;margin-top:8px;padding:10px;background:rgba(255,255,255,0.04);border-radius:4px;border:1px solid rgba(255,255,255,0.07)">
+        1. Go to <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent)">aistudio.google.com</a><br>
+        2. Sign in with Google account<br>
+        3. Click "Create API Key"<br>
+        4. Copy key → paste above<br>
+        5. Click Connect<br><br>
+        ✅ Free tier: 15 req/min, 1500/day<br>
+        🔒 Key stays in your browser only
+      </div>
+    </details>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-panel">
+    <div class="results-header">
+      <h2>📊 Results</h2>
+      <span class="r-counter" id="rCounter">0 classified</span>
+    </div>
+
+    <div class="stats-mini">
+      <div class="sm-box"><div class="sm-n" id="sTotal" style="color:var(--paper)">0</div><div class="sm-l">Total</div></div>
+      <div class="sm-box"><div class="sm-n" id="sBajaj" style="color:#93c5fd">0</div><div class="sm-l">Bajaj</div></div>
+      <div class="sm-box"><div class="sm-n" id="sDaladala" style="color:#86efac">0</div><div class="sm-l">Daladala</div></div>
+      <div class="sm-box"><div class="sm-n" id="sBodaboda" style="color:#fdba74">0</div><div class="sm-l">Bodaboda</div></div>
+      <div class="sm-box"><div class="sm-n" id="sUnknown" style="color:#c4b5fd">0</div><div class="sm-l">Unknown</div></div>
+    </div>
+
+    <div class="color-row">
+      <span class="clr-label">// colors:</span>
+      <div id="colorTags" style="display:flex;gap:5px;flex-wrap:wrap;"></div>
+    </div>
+
+    <div class="export-row">
+      <button class="btn-export" id="btnCSV" disabled onclick="exportCSV()">⬇ CSV</button>
+      <button class="btn-export" id="btnJSON" disabled onclick="exportJSON()">⬇ JSON</button>
+    </div>
+
+    <div class="results-grid" id="grid">
+      <div class="empty">
+        <div class="empty-icon">🚦</div>
+        <h3>Ready to classify</h3>
+        <p>Connect your Gemini API key, upload photos, then hit Classify.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ─────────────────────────────────────────
+const CLS_CFG = {
+  Bajaj:    {color:'#3b82f6', stat:'sBajaj'},
+  Daladala: {color:'#22c55e', stat:'sDaladala'},
+  Bodaboda: {color:'#f97316', stat:'sBodaboda'},
+  Unknown:  {color:'#8b5cf6', stat:'sUnknown'},
+};
+const COLOR_HEX = {
+  Blue:'#3b82f6',Red:'#ef4444',Green:'#22c55e',Yellow:'#eab308',
+  White:'#f8fafc',Black:'#334155',Orange:'#f97316',Brown:'#92400e',
+  Gray:'#64748b',Silver:'#94a3b8',Teal:'#14b8a6',Gold:'#d97706',
+  Maroon:'#9f1239',Cream:'#fef3c7',Purple:'#a855f7',
+};
+
+let apiKey = '';
+let queue = [], results = [], counters = {Bajaj:1,Daladala:1,Bodaboda:1,Unknown:1};
+let colorCounts = {}, processing = false;
+
+// ── API CONNECT ─────────────────────────────────────
+function connectAPI() {
+  const k = document.getElementById('apiKey').value.trim();
+  if (!k || k.length < 20) { toast('Enter a valid Gemini API key', 'err'); return; }
+  apiKey = k;
+  const st = document.getElementById('apiStatus');
+  st.className = 'api-status connected';
+  st.textContent = '● Gemini connected';
+  document.getElementById('btnRun').disabled = queue.length === 0;
+  toast('✅ Gemini API connected!', 'ok');
+}
+
+// ── FILE HANDLING ───────────────────────────────────
+const dz = document.getElementById('dropZone');
+const fi = document.getElementById('fileIn');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); addFiles([...e.dataTransfer.files]); });
+fi.addEventListener('change', () => { addFiles([...fi.files]); fi.value=''; });
+
+function addFiles(files) {
+  const imgs = files.filter(f => f.type.startsWith('image/') || /\.(jpg|jpeg|png|webp|avif|bmp)$/i.test(f.name));
+  if (!imgs.length) { toast('No images found', 'err'); return; }
+  imgs.forEach(f => queue.push({ id: Date.now()+Math.random(), file:f, url:URL.createObjectURL(f), status:'pending', result:null }));
+  renderQueue();
+  if (apiKey) document.getElementById('btnRun').disabled = false;
+  document.getElementById('qSection').style.display = 'block';
+  toast(`📸 ${imgs.length} image(s) added`,'ok');
+}
+
+function renderQueue() {
+  document.getElementById('qCount').textContent = queue.length;
+  document.getElementById('qList').innerHTML = queue.map(i => `
+    <div class="q-item" id="qi_${i.id}">
+      <img class="q-thumb" src="${i.url}">
+      <div class="q-name">${i.file.name}</div>
+      <span class="q-status s-${i.status}">${i.status}</span>
+    </div>`).join('');
+}
+
+function setQStatus(id, s) {
+  const el = document.querySelector(`#qi_${id} .q-status`);
+  if (el) { el.className=`q-status s-${s}`; el.textContent=s; }
+}
+
+// ── MAIN CLASSIFY LOOP ──────────────────────────────
+async function run() {
+  if (processing || !apiKey) return;
+  if (!apiKey) { toast('Connect Gemini API key first','err'); return; }
+  processing = true;
+  document.getElementById('btnRun').disabled = true;
+  document.getElementById('btnRun').textContent = '⏳ Classifying...';
+  document.getElementById('grid').innerHTML = '';
+
+  const team = (document.getElementById('teamNo').value.trim()||'T01').toUpperCase();
+  const loc  = (document.getElementById('location').value.trim()||'DSM').replace(/\s+/g,'_');
+  const pending = queue.filter(i => i.status==='pending');
+
+  for (let i=0; i<pending.length; i++) {
+    const item = pending[i];
+    setQStatus(item.id,'processing');
+
+    const card = document.createElement('div');
+    card.className = 'r-card'; card.id = `card_${item.id}`;
+    card.innerHTML = `
+      <div class="r-img-wrap">
+        <img src="${item.url}" style="filter:brightness(0.3)">
+        <div class="r-overlay"><div class="r-spinner"></div><div class="r-proc">ANALYZING…</div></div>
+      </div>
+      <div class="r-body"><div class="r-orig">${item.file.name}</div></div>`;
+    document.getElementById('grid').appendChild(card);
+    card.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+    try {
+      const res = await classify(item.file);
+      item.status='done'; item.result=res; results.push({...item,result:res});
+
+      const cls = CLS_CFG[res.class] ? res.class : 'Unknown';
+      const cfg = CLS_CFG[cls];
+      const cnt = counters[cls]++;
+      const color = res.primary_color||'Unknown';
+      const newName = `${team}_${loc}_${cls}_${color.split('/')[0]}_${String(cnt).padStart(3,'0')}.jpg`;
+      res.newName = newName; res.class = cls;
+      colorCounts[color] = (colorCounts[color]||0)+1;
+
+      const swHex = COLOR_HEX[color.split('/')[0]]||'#64748b';
+      const r=parseInt(swHex.slice(1,3),16), g=parseInt(swHex.slice(3,5),16), b=parseInt(swHex.slice(5,7),16);
+      const lum=0.299*r+0.587*g+0.114*b;
+      const txtColor=lum>140?'#0f172a':'#ffffff';
+
+      card.innerHTML = `
+        <div class="r-img-wrap" style="border-bottom:2px solid ${cfg.color}">
+          <img src="${item.url}">
+          <div class="r-class-tag" style="background:${cfg.color}aa">${cls}</div>
+          <div class="r-color-tag">
+            <div class="r-swatch" style="background:${swHex}"></div>${color}
+          </div>
+          <div class="r-conf-bar" style="width:${res.confidence}%;background:${cfg.color}"></div>
+        </div>
+        <div class="r-body">
+          <div class="r-new-name">${newName}</div>
+          <div class="r-orig">was: ${item.file.name}</div>
+          <div class="r-conf-txt">confidence: ${res.confidence}%</div>
+          <button class="r-reason-btn" onclick="this.nextElementSibling.classList.toggle('open')">▾ AI reasoning</button>
+          <div class="r-reason">${res.reasoning}</div>
+        </div>`;
+
+      setQStatus(item.id,'done');
+      updateStats(); updateColors();
+
+    } catch(e) {
+      item.status='error'; setQStatus(item.id,'error');
+      card.querySelector('.r-overlay').innerHTML = `<div style="color:#fca5a5;font-size:0.7rem;padding:12px;text-align:center">❌ ${e.message}</div>`;
+    }
+
+    const pct = Math.round(((i+1)/pending.length)*100);
+    document.getElementById('prog').style.width = pct+'%';
+    document.getElementById('progTxt').textContent = `${i+1}/${pending.length} done`;
+  }
+
+  processing=false;
+  document.getElementById('btnRun').innerHTML='✅ Done! Upload more?';
+  document.getElementById('btnRun').disabled=false;
+  document.getElementById('btnCSV').disabled=false;
+  document.getElementById('btnJSON').disabled=false;
+  toast(`🏆 ${pending.length} image(s) classified!`,'ok');
+}
+
+// ── GEMINI API CALL ─────────────────────────────────
+async function classify(file) {
+  const b64 = await toB64(file);
+  const mime = file.type||'image/jpeg';
+
+  const prompt = `You are an expert vehicle classifier for Dar es Salaam, Tanzania.
+
+Analyze this image. Respond with ONLY a valid JSON object — no markdown, no extra text.
+
+Classify the primary vehicle as ONE of:
+- "Bajaj": 3-wheel motorized tuk-tuk taxi. Distinct 3-wheel shape, small covered cabin.
+- "Daladala": Local minibus/bus for public transport. Toyota Hiace, Coaster, or larger bus.
+- "Bodaboda": Motorcycle WITH rider (and possibly passenger). Bicycles with riders count.
+- "Unknown": Regular car, truck, empty road, unclear image.
+
+Also identify the PRIMARY COLOR of the main vehicle.
+Choose from: Blue, Red, Green, Yellow, White, Black, Orange, Brown, Gray, Silver, Teal, Gold, Maroon, Cream, Purple
+If two colors are prominent, write: "Green/White"
+
+Respond ONLY with this JSON:
+{"class":"Bajaj","primary_color":"Blue","confidence":88,"reasoning":"1-2 sentences explaining visual evidence."}`;
+
+  const resp = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+    {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        contents:[{parts:[
+          {inline_data:{mime_type:mime, data:b64}},
+          {text:prompt}
+        ]}],
+        generationConfig:{temperature:0.1,maxOutputTokens:256}
+      })
+    }
+  );
+
+  if (!resp.ok) {
+    const e = await resp.json().catch(()=>({}));
+    const msg = e.error?.message||`API error ${resp.status}`;
+    if (resp.status===400) throw new Error('Invalid API key — check your Gemini key');
+    if (resp.status===429) throw new Error('Rate limit — wait 30s and retry');
+    throw new Error(msg);
+  }
+
+  const data = await resp.json();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text||'';
+  let parsed;
+  try {
+    const clean = text.replace(/```json|```/g,'').trim();
+    parsed = JSON.parse(clean);
+  } catch {
+    throw new Error('Could not parse AI response');
+  }
+  if (!CLS_CFG[parsed.class]) parsed.class='Unknown';
+  parsed.confidence = Math.min(100,Math.max(0,parseInt(parsed.confidence)||50));
+  parsed.primary_color = parsed.primary_color||'Unknown';
+  return parsed;
+}
+
+function toB64(file) {
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>res(r.result.split(',')[1]);
+    r.onerror=rej;
+    r.readAsDataURL(file);
+  });
+}
+
+// ── STATS ───────────────────────────────────────────
+function updateStats(){
+  const done=results.filter(r=>r.result);
+  document.getElementById('sTotal').textContent=done.length;
+  document.getElementById('rCounter').textContent=`${done.length} classified`;
+  ['Bajaj','Daladala','Bodaboda','Unknown'].forEach(c=>{
+    document.getElementById(CLS_CFG[c].stat).textContent=done.filter(r=>r.result?.class===c).length;
+  });
+}
+
+function updateColors(){
+  document.getElementById('colorTags').innerHTML=Object.entries(colorCounts)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([c,n])=>{
+      const hex=COLOR_HEX[c.split('/')[0]]||'#64748b';
+      const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+      const lum=0.299*r+0.587*g+0.114*b;
+      const txt=lum>140?'#0f172a':'#ffffff';
+      return `<span class="clr-tag" style="background:${hex};color:${txt}">${c} ×${n}</span>`;
+    }).join('');
+}
+
+// ── EXPORT ──────────────────────────────────────────
+function exportCSV(){
+  const done=results.filter(r=>r.result);
+  if(!done.length)return;
+  const team=document.getElementById('teamNo').value.trim()||'T01';
+  const loc=document.getElementById('location').value.trim()||'DSM';
+  let csv='Original Filename,New Filename,Class,Primary Color,Confidence (%),AI Reasoning\n';
+  done.forEach(i=>{
+    const r=i.result, q=s=>`"${(s||'').replace(/"/g,'""')}"`;
+    csv+=`${q(i.file.name)},${q(r.newName)},${r.class},${q(r.primary_color)},${r.confidence},${q(r.reasoning)}\n`;
+  });
+  csv+=`\nSUMMARY\nTeam,${team}\nLocation,${loc}\nTotal,${done.length}\n`;
+  ['Bajaj','Daladala','Bodaboda','Unknown'].forEach(c=>{
+    csv+=`${c},${done.filter(r=>r.result?.class===c).length}\n`;
+  });
+  csv+='\nCOLORS\n';
+  Object.entries(colorCounts).sort((a,b)=>b[1]-a[1]).forEach(([c,n])=>csv+=`${c},${n}\n`);
+  save(csv,`${team}_${loc}_report.csv`,'text/csv');
+  toast('📥 CSV downloaded!','ok');
+}
+
+function exportJSON(){
+  const done=results.filter(r=>r.result);
+  if(!done.length)return;
+  const team=document.getElementById('teamNo').value.trim()||'T01';
+  const loc=document.getElementById('location').value.trim()||'DSM';
+  save(JSON.stringify({
+    team,location:loc,generated:new Date().toISOString(),
+    summary:{total:done.length,
+      by_class:Object.fromEntries(['Bajaj','Daladala','Bodaboda','Unknown'].map(c=>[c,done.filter(r=>r.result?.class===c).length])),
+      by_color:colorCounts},
+    images:done.map(i=>({
+      original_name:i.file.name,new_name:i.result.newName,
+      class:i.result.class,primary_color:i.result.primary_color,
+      confidence:i.result.confidence,reasoning:i.result.reasoning
+    }))
+  },null,2),`${team}_${loc}_data.json`,'application/json');
+  toast('📥 JSON downloaded!','ok');
+}
+
+function save(content,filename,type){
+  const url=URL.createObjectURL(new Blob([content],{type}));
+  Object.assign(document.createElement('a'),{href:url,download:filename}).click();
+  URL.revokeObjectURL(url);
+}
+
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=`toast ${type} show`;
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+</script>
+</body>
+</html>

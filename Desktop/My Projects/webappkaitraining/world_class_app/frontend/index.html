@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tanzania Vehicle AI | World Class Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="premium-gradient-bg">
+    <div id="root"></div>
+    
+    <!-- React via ESM -->
+    <script type="module">
+        import React, { useState, useEffect } from "https://esm.sh/react";
+        import { createRoot } from "https://esm.sh/react-dom/client";
+        
+        function Navigation() {
+            return (
+                <nav class="flex justify-between items-center p-6 max-w-7xl mx-auto border-b border-white/10 mb-8">
+                    <div class="text-2xl font-extrabold text-cyan-400 glow-text">TZ-AI</div>
+                    <div class="space-x-8 hidden md:flex">
+                        <a href="index.html" class="text-white hover:text-cyan-400 transition">Nyumbani</a>
+                        <a href="classifier.html" class="text-white hover:text-cyan-400 transition">Classifier</a>
+                        <a href="#" class="text-white hover:text-cyan-400 transition">Ripoti</a>
+                    </div>
+                    <a href="classifier.html" class="btn-primary">Anza Sasa</a>
+                </nav>
+            );
+        }
+
+        function Hero() {
+            return (
+                <div class="max-w-7xl mx-auto px-6 py-20 text-center animate-fade-in">
+                    <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
+                        Tanzania Traffic <br/>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">
+                            AI Intelligence
+                        </span>
+                    </h1>
+                    <p class="text-lg text-slate-400 max-w-2xl mx-auto mb-10">
+                        Mfumo wa kisasa wa utambuzi wa vyombo vya moto (Bajaj, Daladala, Bodaboda) 
+                        kwa kutumia teknolojia ya Google Gemini Vision AI.
+                    </p>
+                    <div class="flex flex-col md:flex-row justify-center gap-4">
+                        <a href="classifier.html" class="btn-primary px-10 py-4 text-lg">Harakisha Utambuzi</a>
+                        <button class="bg-slate-800 hover:bg-slate-700 px-10 py-4 rounded-xl font-bold transition">
+                            Tazama Demo
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        function Stats() {
+            const stats = [
+                { label: "Muda wa Kujibu", value: "800ms" },
+                { label: "Usahihi (Accuracy)", value: "98.5%" },
+                { label: "Vyombo DSM", value: "3 Aina" }
+            ];
+            return (
+                <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6 mt-12 mb-20">
+                    {stats.map((s, i) => (
+                        <div key={i} class="glass-card text-center">
+                            <div class="text-3xl font-bold text-cyan-400 mb-1">{s.value}</div>
+                            <div class="text-sm text-slate-500 uppercase tracking-widest">{s.label}</div>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        function App() {
+            return (
+                <>
+                    <Navigation />
+                    <Hero />
+                    <Stats />
+                </>
+            );
+        }
+
+        createRoot(document.getElementById("root")).render(<App />);
+    </script>
+</body>
+</html>

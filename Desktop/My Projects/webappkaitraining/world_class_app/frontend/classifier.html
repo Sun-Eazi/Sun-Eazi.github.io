@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="sw">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classifier | Tanzania Vehicle AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body class="premium-gradient-bg">
+    <div id="root"></div>
+
+    <script type="module">
+        import React, { useState, useEffect } from "https://esm.sh/react";
+        import { createRoot } from "https://esm.sh/react-dom/client";
+
+        function App() {
+            const [file, setFile] = useState(null);
+            const [preview, setPreview] = useState(null);
+            const [result, setResult] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [backendUrl, setBackendUrl] = useState("http://localhost:8000");
+
+            const handleFileChange = (e) => {
+                const f = e.target.files[0];
+                setFile(f);
+                if (f) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => setPreview(reader.result);
+                    reader.readAsDataURL(f);
+                }
+            };
+
+            const runClassification = async () => {
+                if (!file) return alert("Tafadhali chagua picha!");
+                setLoading(true);
+
+                const formData = new FormData();
+                formData.append("file", file);
+
+                try {
+                    const res = await fetch(`${backendUrl}/api/v1/classify`, {
+                        method: "POST",
+                        body: formData
+                    });
+                    const data = await res.json();
+                    setResult(data);
+                } catch (err) {
+                    alert("Kosa limeharibika: Tatizo la backend");
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            return (
+                <div class="min-h-screen p-6 max-w-6xl mx-auto animate-fade-in">
+                    <header class="flex justify-between items-center mb-10 border-b border-white/10 pb-6">
+                        <h1 class="text-3xl font-bold">Vehicle Classifier</h1>
+                        <input
+                            value={backendUrl}
+                            onChange={(e) => setBackendUrl(e.target.value)}
+                            class="bg-slate-800 px-4 py-2 rounded-lg text-sm border border-white/10 w-64"
+                        />
+                    </header>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                        {/* Upload Side */}
+                        <div class="glass-card flex flex-col items-center justify-center border-dashed border-2 border-cyan-500/30">
+                            {preview ? (
+                                <img src={preview} class="max-h-64 rounded-xl mb-6 shadow-2xl" />
+                            ) : (
+                                <div class="text-slate-500 mb-6 italic text-center">
+                                    Pakia picha ya chombo (Bajaj, Daladala, Bodaboda) hapa chini
+                                </div>
+                            )}
+
+                            <input type="file" onChange={handleFileChange} class="hidden" id="fileInput" />
+                            <label for="fileInput" class="btn-primary cursor-pointer mb-4">
+                                Chagua Picha
+                            </label>
+
+                            <button
+                                onClick={runClassification}
+                                disabled={loading}
+                                class="w-full bg-slate-800 hover:bg-slate-700 py-4 rounded-xl font-bold transition flex justify-center items-center"
+                            >
+                                {loading ? "Inachakata..." : "Anza Utambuzi"}
+                            </button>
+                        </div>
+
+                        {/* Result Side */}
+                        <div class="space-y-6">
+                            {result ? (
+                                <div class="glass-card animate-fade-in border-l-4 border-cyan-500">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h3 class="text-sm uppercase tracking-widest text-slate-500 font-bold">Matokeo</h3>
+                                            <div class="text-4xl font-extrabold text-cyan-400">{result.vehicle_class}</div>
+                                        </div>
+                                        <div class="bg-cyan-500/20 text-cyan-400 px-3 py-1 rounded-full text-xs font-bold">
+                                            {result.confidence}% Confidence
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-4 mb-6">
+                                        <div class="bg-slate-900/50 p-3 rounded-lg">
+                                            <span class="text-xs text-slate-500 block">Color</span>
+                                            <span class="font-bold">{result.primary_color}</span>
+                                        </div>
+                                        <div class="bg-slate-900/50 p-3 rounded-lg">
+                                            <span class="text-xs text-slate-500 block">Team</span>
+                                            <span class="font-bold">{result.team_no}</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-slate-400 text-sm italic">
+                                        "{result.reasoning}"
+                                    </div>
+                                </div>
+                            ) : (
+                                <div class="glass-card h-full flex flex-col items-center justify-center text-slate-500">
+                                    Subiri matokeo ya AI hapa...
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        createRoot(document.getElementById("root")).render(<App />);
+    </script>
+</body>
+
+</html>
