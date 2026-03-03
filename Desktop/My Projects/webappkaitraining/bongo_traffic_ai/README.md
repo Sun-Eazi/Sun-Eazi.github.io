@@ -21,4 +21,4 @@ This system is optimized for zero-shot classification on unseen Dar es Salaam tr
 - FastAPI, Supabase, React (ESM), Tailwind CSS, Gemini AI.
 
 ---
-*Developed by Sun-Eazi for the UAUT AI Challenge.*
+*Developed by Linus Lucas Rwechoka (Sun-Eazi) for the UAUT AI Hackathon 2026.*
